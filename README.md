@@ -1,1 +1,1 @@
-# elvish-lib
+# elvish-libs
