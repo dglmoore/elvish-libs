@@ -17,18 +17,20 @@ fn pushd [@args]{
     }
 }
 
-fn popd [&n=1 &v=$true]{
+fn popd [&n=1 &silent=$false]{
     if (> $n 0) {
         if (< (count $DIRSTACK) 1) {
-            echo "directory stack is empty"
+            if (not (bool $silent)) {
+                echo "directory stack is empty"
+            }
         } else {
             to=(take 1 $DIRSTACK)
             if ?(builtin:cd $to) {
                 DIRSTACK = $DIRSTACK[1:]
-                if (bool $v) {
+                if (not (bool $silent)) {
                     put $to
                 }
-                popd &n=(- $n 1) &v=$v
+                popd &n=(- $n 1) &silent=$silent
             }
         }
     }
