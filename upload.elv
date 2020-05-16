@@ -19,7 +19,14 @@ fn encrypt [path]{
         fail "path ("$path") is neither a regular file nor a directory"
     }
     ppd:pushd (path-dir $path)
-    tar czO (basename $path) 2>/dev/null | gpg --encrypt --sign -r $E:EMAIL > $output
+    try {
+        tar czO (basename $path) 2>/dev/null | gpg --encrypt --sign -r $E:EMAIL > $output
+    } except e {
+        if ?(statfile $output) {
+            rm $output
+        }
+        fail "cannot encrypt "$path
+    }
     ppd:popd &silent=$true
     joins '/' [(path-dir $path) $output] | path-abs (all) | echo (all)
 }
@@ -39,5 +46,22 @@ fn add-slash [path]{
 fn upload [&to=backup from]{
     encrypted = (encrypt $from)
     aws s3 cp $encrypted s3://spermion/(add-slash $to)
+    rm $encrypted
+}
+
+
+fn download [&to="." from]{
+    encrypted = (path-abs $to)
+    if (is-dir $encrypted) {
+        encrypted = (joins "/" [$encrypted (basename $from)])
+    }
+    encrypted_dir = (path-dir $encrypted)
+
+    aws s3 cp s3://spermion/$from $encrypted
+
+    ppd:pushd $encrypted_dir
+    decrypted = (joins '/' [$encrypted_dir (decrypt $encrypted)])
+    ppd:popd &silent=$true
+
     rm $encrypted
 }
