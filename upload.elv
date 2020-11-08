@@ -36,7 +36,7 @@ fn decrypt [path]{
 }
 
 fn add-slash [path]{
-    chars = [(splits '' $path)]
+    chars = [(str:split '' $path)]
     if (!=s $chars[-1] '/') {
         chars = [$@chars '/']
     }
