@@ -116,24 +116,24 @@ fn stop-instance [&hibernate=$true name]{
     }
 }
 
-fn ssh [name @args]{
-    e:ssh $@args ec2-user@(get-instance-ip $name)
+fn ssh [name &user="ec2-user" @args]{
+    e:ssh $@args $user@(get-instance-ip $name)
 }
 
-fn sftp [name @args]{
-    e:sftp $@args ec2-user@(get-instance-ip $name)
+fn sftp [name &user="ec2-user" @args]{
+    e:sftp $@args $user@(get-instance-ip $name)
 }
 
-fn sshfs [name &at="" &dir="" @args]{
+fn sshfs [name &user="ec2-user" &at="" &dir="" @args]{
     if (==s $at "") {
         at = $name
     }
     if (not ?(is-dir $at > /dev/null 2>&1)) {
         mkdir $at
     }
-    e:sshfs ec2-user@(get-instance-ip $name):$dir $at
+    e:sshfs $user@(get-instance-ip $name):$dir $at
 }
 
-fn sam [name @args]{
-    e:sam -r ec2-user@(get-instance-ip $name) $@args &
+fn sam [name &user="ec2-user" @args]{
+    e:sam -r $user@(get-instance-ip $name) $@args &
 }
