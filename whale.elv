@@ -1,7 +1,15 @@
-WHALE=(e:cat $E:HOME/.elvish/whale.json | from-json)
+WHALE = (e:cat $E:HOME/.elvish/whale.json | from-json)
 
 fn ssh [&machine=whale @a]{
     e:ssh -i ~/.ssh/whale_rsa $@a $WHALE["machines"][$machine]
+}
+
+fn scp [&machine=whale from to @a]{
+    e:scp -i ~/.ssh/whale_rsa $@a $WHALE["machines"][$machine]:$from $to
+}
+
+fn sftp [&machine=whale @a]{
+    e:sftp -i ~/.ssh/whale_rsa $@a $WHALE["machines"][$machine]
 }
 
 fn tunnel [&port=3305 &machine=whale @a]{

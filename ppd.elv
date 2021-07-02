@@ -4,7 +4,7 @@ fn pushd [@args]{
     dir = $E:HOME
     if (>= (count $args) 1) {
         dir = $args[0]
-        args = $args[1:]
+        args = $args[1..]
     }
     if (!=s $dir $pwd) {
         from = $pwd
@@ -24,9 +24,9 @@ fn popd [&n=1 &silent=$false]{
                 echo "directory stack is empty"
             }
         } else {
-            to=(take 1 $DIRSTACK)
+            to = (take 1 $DIRSTACK)
             if ?(builtin:cd $to) {
-                DIRSTACK = $DIRSTACK[1:]
+                DIRSTACK = $DIRSTACK[1..]
                 if (not (bool $silent)) {
                     put $to
                 }
